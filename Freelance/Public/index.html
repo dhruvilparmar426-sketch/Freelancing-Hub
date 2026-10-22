@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Freelancing Hub | Login</title>
+<style>
+:root{--teal:#0F766E;--navy:#0F172A;--white:#fff;--mint:#99F6E4;--muted:#94A3B8}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:var(--teal);color:var(--white);font-family:Inter,Arial,sans-serif;display:grid;place-items:center;padding:28px;overflow-x:hidden}
+.bg-orb{position:fixed;border-radius:50%;filter:blur(1px);opacity:.16;pointer-events:none;animation:float 9s ease-in-out infinite}.orb1{width:240px;height:240px;background:#99F6E4;top:-70px;left:-60px}.orb2{width:330px;height:330px;border:2px solid #fff;bottom:-140px;right:-80px;animation-delay:-4s}
+.page{width:min(900px,100%);position:relative;z-index:1;animation:pageIn .7s cubic-bezier(.2,.8,.2,1) both}
+.topbar{display:flex;justify-content:flex-end;margin:0 0 18px}.role-switch{display:flex;gap:4px;padding:5px;border-radius:999px;background:var(--mint);box-shadow:0 8px 25px #052e2b30}
+.role-switch button{border:0;border-radius:999px;padding:9px 15px;background:transparent;color:var(--navy);font-weight:700;cursor:pointer;transition:background .25s,color .25s,transform .25s}.role-switch button.active{background:var(--teal);color:#fff;box-shadow:0 3px 9px #052e2b35}.role-switch button:hover{transform:translateY(-1px)}
+.panel{min-height:380px;background:var(--white);border-radius:24px;padding:18px;display:grid;grid-template-columns:minmax(150px, .8fr) minmax(280px,1.2fr);gap:0;align-items:center;box-shadow:0 24px 65px #042f2e30;overflow:hidden}
+.art-slot{height:300px;display:grid;place-items:center;position:relative}.art-slot img{display:block;max-width:100%;max-height:100%;object-fit:contain;animation:float 5s ease-in-out infinite}.image-placeholder{width:100%;height:100%;display:grid;place-items:center;color:#64748b;font-size:12px;text-align:center;padding:16px}.image-placeholder span{display:block;border:1.5px dashed #cbd5e1;border-radius:18px;width:88%;height:78%;display:grid;place-items:center;background:linear-gradient(145deg,#f8fafc,#fff)}
+.auth{background:var(--navy);border-radius:22px;padding:30px clamp(20px,4vw,44px);min-height:320px;display:flex;flex-direction:column;justify-content:center;animation:cardIn .65s .1s both}
+h1{font-size:25px;margin:0 0 26px;text-align:center;letter-spacing:.2px}form{display:grid;gap:14px}.field{display:grid;gap:7px}label{font-size:12px;color:#e2e8f0}input{width:100%;border:1px solid #334155;background:#1e293b;color:#fff;border-radius:10px;padding:12px 13px;outline:none;transition:border .2s,box-shadow .2s,transform .2s}input:focus{border-color:var(--mint);box-shadow:0 0 0 3px #99f6e426}input::placeholder{color:#94a3b8}.primary{border:0;border-radius:999px;background:var(--mint);color:var(--navy);padding:11px 20px;font-weight:800;cursor:pointer;transition:transform .2s,box-shadow .2s,filter .2s}.primary:hover{transform:translateY(-2px);box-shadow:0 8px 20px #99f6e42b;filter:brightness(1.04)}.primary:active{transform:scale(.98)}
+.submit-row{display:flex;justify-content:center;margin-top:3px}.small-link{color:var(--mint);font-size:12px;text-decoration:none;text-align:center;cursor:pointer}.small-link:hover{text-decoration:underline}.account-line{text-align:center;font-size:12px;color:#cbd5e1;margin:15px 0 9px}.or{display:flex;align-items:center;gap:10px;color:#94a3b8;font-size:11px;margin:12px 0}.or:before,.or:after{content:"";height:1px;background:#475569;flex:1}.google{align-self:center;background:#fff;color:#111827;border:0;border-radius:999px;padding:8px 14px;font-size:11px;cursor:pointer;display:flex;gap:8px;align-items:center;transition:transform .2s}.google:hover{transform:translateY(-2px)}.google-mark{font-weight:900;font-size:15px;color:#4285f4}.message{font-size:12px;min-height:16px;text-align:center;color:var(--mint);margin:10px 0 0}.foot{text-align:center;color:#d1fae5aa;font-size:11px;margin-top:17px}
+@keyframes pageIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}@keyframes cardIn{from{opacity:0;transform:translateX(20px) scale(.98)}to{opacity:1;transform:translateX(0) scale(1)}}@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}@keyframes pulse{0%,100%{box-shadow:0 0 0 0 #99f6e433}50%{box-shadow:0 0 0 7px #99f6e400}}
+@media(max-width:650px){body{padding:18px}.panel{grid-template-columns:1fr;padding:12px;gap:8px}.art-slot{height:125px}.image-placeholder span{width:42%;height:90%}.auth{padding:26px 20px;min-height:0}.topbar{margin-bottom:12px}h1{margin-bottom:20px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+</style>
+</head>
+
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+
+<script>
+const GOOGLE_CLIENT_ID = "412191693858-b7m4l6naenis5jitusadl4dte3155aip.apps.googleusercontent.com";
+const BACKEND_URL = "https://freelancing-hub-1.onrender.com";
+
+function startGoogleLogin() {
+  google.accounts.id.initialize({
+    client_id: GOOGLE_CLIENT_ID,
+    callback: async function (response) {
+      try {
+        const result = await fetch(
+          BACKEND_URL + "/api/auth/google",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              credential: response.credential
+            })
+          }
+        );
+
+        const data = await result.json();
+
+        if (!result.ok || !data.success) {
+          throw new Error(data.message || "Login failed");
+        }
+
+        alert("Welcome " + data.user.name);
+
+        // Replace with your actual dashboard page
+        window.location.href = "dashboard.html";
+
+      } catch (error) {
+        console.error(error);
+        alert("Google login failed. Check your backend.");
+      }
+    }
+  });
+
+  google.accounts.id.prompt();
+}
+</script>
+<body>
+<div class="bg-orb orb1"></div><div class="bg-orb orb2"></div>
+<main class="page">
+  <div class="topbar"><div class="role-switch" role="group" aria-label="Choose account type">
+    <button type="button" id="developerTab" class="active" aria-pressed="true">Developer</button>
+    <button type="button" id="userTab" aria-pressed="false">User</button>
+  </div></div>
+  <section class="panel">
+    <div class="art-slot">
+      <img id="roleImage" src="developer.png" alt="Developer illustration" style="display:block;max-width:100%;max-height:100%;object-fit:contain;animation:float 5s ease-in-out infinite;">
+    </div>
+    <div class="auth">
+      <h1>LOGIN</h1>
+      <form id="loginForm">
+        <div class="field"><label for="email">Email</label><input id="email" name="email" type="email" placeholder="you@example.com" autocomplete="email" required></div>
+        <div class="field"><label for="password">Password</label><input id="password" name="password" type="password" placeholder="Enter your password" autocomplete="current-password" minlength="6" required></div>
+        <div class="submit-row"><button class="primary" type="submit">LOGIN</button></div>
+      </form>
+      <p class="account-line"
+      <a class="small-link" href="signup.html" id="createLink">Create an account</a>
+      <div class="or">OR</div>
+      <button type="button" class="google" id="googleBtn"><span class="google-mark">G</span> Continue with Google</button>
+      <p class="message" id="message" role="status" aria-live="polite"></p>
+    </div>
+  </section>
+  <div class="foot">Freelancing Hub · Find your next opportunity</div>
+</main>
+<script>
+const developerTab=document.querySelector('#developerTab'), userTab=document.querySelector('#userTab');
+const message=document.querySelector('#message');
+let accountRole='Developer';
+function setRole(role){
+  accountRole=role;
+  const isDev=role==='Developer';
+  developerTab.classList.toggle('active',isDev); userTab.classList.toggle('active',!isDev);
+  developerTab.setAttribute('aria-pressed',String(isDev)); userTab.setAttribute('aria-pressed',String(!isDev));
+  document.querySelector('h1').textContent='LOGIN';
+  document.querySelector('.foot').textContent=isDev?'Freelancing Hub · Build your next opportunity':'Freelancing Hub · Find your next opportunity';
+  message.textContent='';
+  const roleImage=document.querySelector('#roleImage');
+  roleImage.src=isDev?'developer.png':'user.png';
+  roleImage.alt=isDev?'Developer illustration':'User illustration';
+}
+developerTab.addEventListener('click',()=>setRole('Developer'));
+userTab.addEventListener('click',()=>setRole('User'));
+document.querySelector('#loginForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  const email=document.querySelector('#email').value.trim();
+  const password=document.querySelector('#password').value;
+  if(!email||password.length<6){message.textContent='Enter a valid email and password (at least 6 characters).';return;}
+  // Front-end demo only. Connect this form to your backend for real authentication.
+  const saved=JSON.parse(localStorage.getItem('freelancingHubUsers')||'[]');
+  const found=saved.find(u=>u.email.toLowerCase()===email.toLowerCase()&&u.password===password&&u.role===accountRole);
+  if(found){message.textContent='Demo login successful! Welcome, '+found.name+'.';}
+  else {message.textContent='Demo only: account not found. Create an account first, or connect a backend.';}
+});
+document.querySelector('#googleBtn').addEventListener('click',()=>{message.textContent='Google sign-in needs Google OAuth setup in your backend.';});
+document.querySelector('#createLink').addEventListener('click',()=>sessionStorage.setItem('freelancingHubRole',accountRole));
+</script>
+</body></html>
+<script src="https://accounts.google.com/gsi/client"
+        async defer></script>

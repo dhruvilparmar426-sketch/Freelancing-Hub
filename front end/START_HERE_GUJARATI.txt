@@ -1,0 +1,26 @@
+FREELANCING HUB + GEMINI AI CHATBOT / VOICE ASSISTANT
+
+TAME KHAS KARINE API KEY NAKHAVI PADSE. BAaki setup ready chhe.
+
+1) ZIP extract karo.
+2) Node.js LTS install na hoy to https://nodejs.org/ parthi install karo.
+3) Extract karel folder VS Code ma kholo.
+4) Folder ma .env naamni file kholo.
+5) Aa line ma tamari Gemini API key nakho:
+   GEMINI_API_KEY=PASTE_YOUR_GEMINI_API_KEY_HERE
+   PASTE_YOUR_GEMINI_API_KEY_HERE ni jagyae tamari asli key nakho.
+   Example: GEMINI_API_KEY=AIza... (aa example key nathi, tamari key vapro.)
+6) VS Code Terminal kholo ane project folder ma aa command ek pachi ek chalavo:
+   npm install
+   npm start
+7) Browser ma kholo: http://localhost:3000
+8) AI chat widget ma message lakho athva mic dabavi voice input try karo. Browser mic permission mange to Allow karo.
+
+Gemini API key: https://aistudio.google.com/apikey
+
+IMPORTANT:
+- API key index.html ke biji JavaScript file ma na nakhsho.
+- .env file koi sathe share ke public upload na karsho.
+- Gemini API key, account access, network ane Google quota par AI replies depend kare chhe.
+- Voice input browser support ane microphone permission par depend kare chhe.
+- npm install mate internet connection jaruri chhe.

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Create Account | Freelancing Hub</title>
+<style>
+:root{--teal:#0F766E;--navy:#0F172A;--white:#fff;--mint:#99F6E4}*{box-sizing:border-box}body{margin:0;min-height:100vh;background:var(--teal);font-family:Inter,Arial,sans-serif;color:white;display:grid;place-items:center;padding:24px;overflow-x:hidden}.wrap{width:min(850px,100%);animation:enter .7s ease both}.top{display:flex;justify-content:flex-end;margin-bottom:16px}.switch{display:flex;gap:4px;background:var(--mint);border-radius:999px;padding:5px}.switch button{border:0;border-radius:999px;padding:9px 15px;background:transparent;color:var(--navy);font-weight:bold;cursor:pointer}.switch button.active{background:var(--teal);color:white}.panel{background:white;border-radius:24px;padding:18px;display:grid;grid-template-columns:.8fr 1.2fr;align-items:center;box-shadow:0 24px 65px #042f2e30}.art{height:300px;display:grid;place-items:center;color:#64748b;font-size:12px;text-align:center;padding:15px}.art span{width:90%;height:80%;border:1.5px dashed #cbd5e1;border-radius:18px;display:grid;place-items:center;background:#f8fafc}.formbox{background:var(--navy);border-radius:22px;padding:28px clamp(18px,4vw,40px)}h1{text-align:center;font-size:24px;margin:0 0 22px}form{display:grid;grid-template-columns:1fr 1fr;gap:13px}.field{display:grid;gap:7px}label{font-size:12px;color:#e2e8f0}input,select{width:100%;padding:11px;border-radius:9px;border:1px solid #334155;background:#1e293b;color:white;outline:none}input:focus,select:focus{border-color:var(--mint);box-shadow:0 0 0 3px #99f6e426}.full{grid-column:1/-1}.btn{border:0;border-radius:999px;background:var(--mint);color:var(--navy);padding:12px;font-weight:800;cursor:pointer;transition:.2s}.btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px #99f6e42b}.back{display:block;text-align:center;color:var(--mint);font-size:12px;margin-top:15px;text-decoration:none}.msg{text-align:center;color:var(--mint);font-size:12px;min-height:16px;margin:12px 0 0}.foot{text-align:center;color:#d1fae5aa;font-size:11px;margin-top:17px}@keyframes enter{from{opacity:0;transform:translateY(18px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}@media(max-width:620px){.panel{grid-template-columns:1fr;padding:12px}.art{height:100px}.art span{width:45%;height:90%}.formbox{padding:24px 18px}}@media(max-width:420px){form{grid-template-columns:1fr}.full{grid-column:auto}}
+</style></head><body><main class="wrap">
+<div class="top"><div class="switch"><button type="button" id="dev">Developer</button><button type="button" id="usr">User</button></div></div>
+<section class="panel"><div class="art"><img id="signupRoleImage" src="developer.png" alt="Developer illustration" style="display:block;max-width:100%;max-height:100%;object-fit:contain;animation:float 5s ease-in-out infinite;"></div>
+<div class="formbox"><h1>CREATE ACCOUNT</h1>
+<form id="signupForm">
+<div class="field"><label for="name">Full name</label><input id="name" name="name" placeholder="Your name" autocomplete="name" required></div>
+<div class="field"><label for="email">Email</label><input id="email" name="email" type="email" placeholder="you@example.com" autocomplete="email" required></div>
+<div class="field"><label for="password">Password</label><input id="password" name="password" type="password" minlength="6" placeholder="Minimum 6 characters" required></div>
+<div class="field"><label for="phone">Mobile number</label><input id="phone" name="phone" type="tel" pattern="[0-9+() -]{7,16}" placeholder="Mobile number" required></div>
+<div class="field full"><label for="role">Account type</label><select id="role" name="role"><option value="Developer">Developer</option><option value="User">User / Client</option></select></div>
+<button class="btn full" type="submit">SIGN UP</button>
+</form><p class="msg" id="msg" role="status" aria-live="polite"></p><a class="back" href="login.html">Already have an account? Login</a></div></section><div class="foot">Freelancing Hub · Create your account</div></main>
+<script>
+const roleSelect=document.querySelector('#role'), dev=document.querySelector('#dev'), usr=document.querySelector('#usr');
+function setRole(r){roleSelect.value=r;dev.classList.toggle('active',r==='Developer');usr.classList.toggle('active',r==='User');const img=document.querySelector('#signupRoleImage');img.src=r==='Developer'?'developer.png':'user.png';img.alt=r==='Developer'?'Developer illustration':'User illustration';}
+setRole(sessionStorage.getItem('freelancingHubRole')||'Developer');
+dev.addEventListener('click',()=>setRole('Developer'));usr.addEventListener('click',()=>setRole('User'));
+document.querySelector('#signupForm').addEventListener('submit',e=>{
+ e.preventDefault();const name=document.querySelector('#name').value.trim(),email=document.querySelector('#email').value.trim(),password=document.querySelector('#password').value,phone=document.querySelector('#phone').value.trim(),role=roleSelect.value,msg=document.querySelector('#msg');
+ if(password.length<6){msg.textContent='Password must be at least 6 characters.';return;}
+ const users=JSON.parse(localStorage.getItem('freelancingHubUsers')||'[]');
+ if(users.some(u=>u.email.toLowerCase()===email.toLowerCase()&&u.role===role)){msg.textContent='An account with this email and account type already exists.';return;}
+ users.push({name,email,password,phone,role});localStorage.setItem('freelancingHubUsers',JSON.stringify(users));\n  localStorage.setItem('freelancingHubProfile',JSON.stringify({name,email,phone,role,joinedAt:new Date().toISOString()}));
+ msg.textContent='Account created for demo! Account created! Redirecting to login…';
+ setTimeout(()=>{sessionStorage.setItem('freelancingHubRole',role);location.href='login.html';},900);
+});
+</script></body></html>

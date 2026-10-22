@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Login | Freelancing Hub</title><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--teal:#0f766e;--navy:#0f172a;--mint:#99f6e4}*{box-sizing:border-box}body{margin:0;min-height:100vh;background:var(--teal);font-family:Inter,Arial,sans-serif;display:grid;place-items:center;padding:22px;color:#fff}.wrap{width:min(900px,100%);animation:enter .6s ease both}.panel{display:grid;grid-template-columns:.9fr 1.1fr;gap:16px;background:#fff;border-radius:24px;padding:16px;box-shadow:0 25px 65px #042f2e40;align-items:center}.art{display:grid;place-items:center;min-height:360px;background:#f8fafc;border-radius:18px}.art img{width:100%;max-height:350px;object-fit:contain;animation:float 4s ease-in-out infinite}.formbox{background:var(--navy);border-radius:20px;padding:clamp(22px,4vw,42px)}h1{text-align:center;margin:0 0 24px}.field{display:grid;gap:7px;margin:14px 0}label{font-size:12px;color:#dbeafe}input{width:100%;padding:13px;border-radius:9px;border:1px solid #334155;background:#1e293b;color:#fff;outline:none}input:focus{border-color:var(--mint);box-shadow:0 0 0 3px #99f6e426}.btn{display:block;width:100%;border:0;border-radius:999px;background:var(--mint);color:var(--navy);font-weight:800;padding:13px;cursor:pointer;transition:.25s}.btn:hover{transform:translateY(-2px);box-shadow:0 9px 22px #99f6e433}.back{display:block;text-align:center;margin-top:17px;color:var(--mint);font-size:13px;text-decoration:none}.msg{min-height:18px;text-align:center;color:#fda4af;font-size:12px}.brand{text-align:center;margin:0 0 15px;font-weight:800;letter-spacing:.3px}.role-switch{display:flex;gap:5px;padding:5px;background:#d9f8f2;border-radius:999px;margin:0 auto 20px;max-width:280px}.role-switch button{flex:1;border:0;border-radius:999px;padding:10px 8px;background:transparent;color:#115e59;font-weight:700;cursor:pointer;transition:all .25s}.role-switch button.active{background:#0f766e;color:#fff;box-shadow:0 5px 15px #0f766e30}.role-switch button:focus-visible{outline:2px solid #99f6e4;outline-offset:2px}.small{text-align:center;color:#cbd5e1;font-size:11px;line-height:1.6;margin-top:14px}@keyframes enter{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}@keyframes float{50%{transform:translateY(-8px)}}@media(max-width:650px){.panel{grid-template-columns:1fr;padding:10px}.art{min-height:150px}.art img{max-height:180px}.formbox{padding:25px 20px}}
+</style></head><body><main class="wrap"><p class="brand">✣ Freelancing Hub</p><section class="panel"><div class="art"><img id="loginRoleImage" src="developer.png" alt="Developer illustration"></div><div class="formbox"><h1>LOGIN</h1>
+<div class="role-switch" role="group" aria-label="Choose account type"><button type="button" id="loginDeveloper" class="active" aria-pressed="true">Developer</button><button type="button" id="loginUser" aria-pressed="false">User</button></div>
+<form id="loginForm"><div class="field"><label for="email">Email</label><input id="email" type="email" autocomplete="email" placeholder="you@example.com" required></div><div class="field"><label for="password">Password</label><input id="password" type="password" autocomplete="current-password" placeholder="Enter your password" required></div><button class="btn" type="submit">LOGIN</button></form><p class="msg" id="msg" role="status" aria-live="polite"></p><a class="back" href="signup.html">Create a new account</a><a class="back" href="index.html">← Back to landing page</a><p class="small">Demo authentication only. For real accounts and secure password handling, connect PHP + MySQL backend authentication.</p></div></section></main>
+<script>
+const form=document.getElementById('loginForm'),msg=document.getElementById('msg');
+const devBtn=document.getElementById('loginDeveloper');
+const userBtn=document.getElementById('loginUser');
+const roleImage=document.getElementById('loginRoleImage');
+let selectedRole=sessionStorage.getItem('freelancingHubRole')||'User';
+function setLoginRole(role){
+  selectedRole=role;
+  sessionStorage.setItem('freelancingHubRole',role);
+  const isDev=role==='Developer';
+  devBtn.classList.toggle('active',isDev);
+  userBtn.classList.toggle('active',!isDev);
+  devBtn.setAttribute('aria-pressed',String(isDev));
+  userBtn.setAttribute('aria-pressed',String(!isDev));
+  roleImage.src=isDev?'developer.png':'user.png';
+  roleImage.alt=isDev?'Developer illustration':'User illustration';
+  msg.textContent='';
+}
+devBtn.addEventListener('click',()=>setLoginRole('Developer'));
+userBtn.addEventListener('click',()=>setLoginRole('User'));
+setLoginRole(selectedRole);
+
+const current=JSON.parse(localStorage.getItem('freelancingHubCurrentUser')||'null');
+if(current){location.replace(current.role==='Developer'?'developer.html':'index.html');}
+form.addEventListener('submit',e=>{
+ e.preventDefault();
+ const email=document.getElementById('email').value.trim().toLowerCase();
+ const password=document.getElementById('password').value;
+ const users=JSON.parse(localStorage.getItem('freelancingHubUsers')||'[]');
+ const user=users.find(u=>String(u.email).toLowerCase()===email&&u.password===password&&(u.role||'User')===selectedRole);
+ if(!user){msg.textContent='No '+selectedRole.toLowerCase()+' account found for these details. Check your account type or create an account.';return;}
+ const profile={name:user.name,email:user.email,phone:user.phone||'',role:user.role||selectedRole,joinedAt:new Date().toISOString()};
+ localStorage.setItem('freelancingHubProfile',JSON.stringify(profile));
+ localStorage.setItem('freelancingHubCurrentUser',JSON.stringify(profile));
+ sessionStorage.setItem('freelancingHubShowWelcome','1');
+ location.href=profile.role==='Developer'?'developer.html':'index.html';
+});
+document.querySelector('.back[href="signup.html"]')?.addEventListener('click',()=>sessionStorage.setItem('freelancingHubRole',selectedRole));
+</script>  <script src="assistant.js"></script>
+</body></html>
